@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>학생 점수 관리 | 학생 페이지</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body data-page="student">
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-badge">S</div>
+        <div>
+          <h1>학생 점수 관리 웹</h1>
+          <p>학생 전용 페이지</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="logoutBtn" class="ghost-btn" type="button">로그아웃</button>
+      </div>
+    </header>
+
+    <main class="page-grid">
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">내 정보</span>
+            <h2>학생 정보</h2>
+          </div>
+        </div>
+        <div id="studentInfoCards" class="card-grid four"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">내 점수</span>
+            <h2>현재 누적 점수</h2>
+          </div>
+        </div>
+
+        <div class="score-hero">
+          <div class="score-label">TOTAL SCORE</div>
+          <div id="studentScoreValue" class="score-value">0</div>
+          <div class="score-label sub">점</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">오늘의 활동</span>
+            <h2>하루 1회 직접 점수 올리기</h2>
+            <p class="sub-text">여러 항목을 동시에 선택할 수 있습니다. 2개 선택하면 200점처럼 합산됩니다.</p>
+          </div>
+        </div>
+
+        <div id="dailyStatusBox" class="status-box">오늘 제출 여부를 확인 중입니다.</div>
+
+        <form id="dailyActivityForm" class="form-block">
+          <div id="dailyActivityOptions" class="activity-grid"></div>
+          <div class="edit-actions">
+            <button id="saveDailyActivityBtn" class="primary-btn" type="submit">저장하기</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">항목별 누적</span>
+            <h2>활동별 누적 점수</h2>
+          </div>
+        </div>
+        <div id="studentItemSummaryCards" class="card-grid four"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">최근 기록</span>
+            <h2>최근 점수 반영 내역</h2>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>구분</th>
+                <th>내용</th>
+                <th>반영 점수</th>
+              </tr>
+            </thead>
+            <tbody id="studentLogsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <p id="messageBox" class="message-box"></p>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

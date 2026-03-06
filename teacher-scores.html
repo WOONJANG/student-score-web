@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>학생 점수 관리 | 학생 점수 관리</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body data-page="teacher-scores">
+  <div class="shell wide">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-badge teacher">T</div>
+        <div>
+          <h1>학생 점수 관리 웹</h1>
+          <p>선생님용 · 학생 점수 관리</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <a class="ghost-btn nav-link" href="./teacher-students.html">학생 계정</a>
+        <a class="ghost-btn nav-link active-link" href="./teacher-scores.html">학생 점수</a>
+        <a class="ghost-btn nav-link" href="./teacher-settings.html">선생님 설정</a>
+        <button id="logoutBtn" class="ghost-btn" type="button">로그아웃</button>
+      </div>
+    </header>
+
+    <main class="page-grid">
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">점수 요약</span>
+            <h2>내 학생 점수 현황</h2>
+          </div>
+          <button id="refreshScoresBtn" class="ghost-btn" type="button">새로고침</button>
+        </div>
+
+        <div id="summaryCards" class="card-grid four"></div>
+
+        <div class="table-wrap top-gap">
+          <table class="data-table wide-table">
+            <thead>
+              <tr>
+                <th>순위</th>
+                <th>학년</th>
+                <th>반</th>
+                <th>번호</th>
+                <th>이름</th>
+                <th>아이디</th>
+                <th>총점</th>
+                <th>물마시기</th>
+                <th>화분 물주기</th>
+                <th>잔반 안 남기기</th>
+                <th>분리수거 하기</th>
+                <th>선생님 조정</th>
+                <th>+1</th>
+                <th>+5</th>
+                <th>+10</th>
+              </tr>
+            </thead>
+            <tbody id="scoresTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">직접 수정</span>
+            <h2>학생 점수 직접 변경</h2>
+            <p class="sub-text">원하는 학생을 선택해서 절대값으로 저장하거나 누적 추가할 수 있습니다.</p>
+          </div>
+        </div>
+
+        <form id="scoreEditForm" class="form-block hidden">
+          <input type="hidden" id="scoreStudentId" />
+          <div class="field-grid">
+            <label class="field">
+              <span>학생 이름</span>
+              <input type="text" id="scoreStudentName" readonly />
+            </label>
+            <label class="field">
+              <span>현재 점수</span>
+              <input type="text" id="scoreCurrentValue" readonly />
+            </label>
+            <label class="field">
+              <span>새 점수로 저장</span>
+              <input type="number" id="scoreSetValue" placeholder="예: 120" />
+            </label>
+            <label class="field">
+              <span>누적 추가 점수</span>
+              <input type="number" id="scoreDeltaValue" placeholder="예: 10 또는 -5" />
+            </label>
+          </div>
+
+          <div class="edit-actions">
+            <button id="saveAbsoluteScoreBtn" class="primary-btn" type="button">점수 저장</button>
+            <button id="saveDeltaScoreBtn" class="secondary-btn" type="button">누적 추가</button>
+            <button id="cancelScoreEditBtn" class="ghost-btn" type="button">취소</button>
+          </div>
+
+          <div id="teacherSelectedItemSummaryCards" class="card-grid four top-gap"></div>
+        </form>
+
+        <div id="scoreEditPlaceholder" class="empty-state">
+          표에서 학생 이름을 누르면 직접 점수를 수정하고, 항목별 누적점수도 함께 볼 수 있습니다.
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">최근 기록</span>
+            <h2>선택 학생 최근 점수 내역</h2>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>구분</th>
+                <th>내용</th>
+                <th>반영 점수</th>
+              </tr>
+            </thead>
+            <tbody id="teacherLogsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <p id="messageBox" class="message-box"></p>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

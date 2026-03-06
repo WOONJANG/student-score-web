@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>학생 점수 관리 | 선생님 설정</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body data-page="teacher-settings">
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-badge teacher">T</div>
+        <div>
+          <h1>학생 점수 관리 웹</h1>
+          <p>선생님용 · 설정</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <a class="ghost-btn nav-link" href="./teacher-students.html">학생 계정</a>
+        <a class="ghost-btn nav-link" href="./teacher-scores.html">학생 점수</a>
+        <a class="ghost-btn nav-link active-link" href="./teacher-settings.html">선생님 설정</a>
+        <button id="logoutBtn" class="ghost-btn" type="button">로그아웃</button>
+      </div>
+    </header>
+
+    <main class="page-grid">
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">현재 정보</span>
+            <h2>선생님 정보</h2>
+            <p class="sub-text">학교명을 바꾸면 이후 새로 가입하는 학생부터 바뀐 학교명이 적용됩니다.</p>
+          </div>
+          <button id="refreshTeacherProfileBtn" class="ghost-btn" type="button">새로고침</button>
+        </div>
+
+        <div id="teacherInfoCards" class="card-grid three"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">정보 변경</span>
+            <h2>선생님 정보 수정</h2>
+          </div>
+        </div>
+
+        <form id="teacherProfileForm" class="form-block">
+          <div class="field-grid">
+            <label class="field">
+              <span>아이디</span>
+              <input type="text" id="teacherProfileUsername" readonly />
+            </label>
+            <label class="field">
+              <span>학교명</span>
+              <input type="text" id="teacherProfileSchoolName" placeholder="예: 행복초등학교" required />
+            </label>
+            <label class="field full-col">
+              <span>비밀번호 변경</span>
+              <input type="password" id="teacherProfilePassword" placeholder="비워두면 기존 비밀번호 유지" />
+            </label>
+          </div>
+
+          <div class="edit-actions">
+            <button class="primary-btn" type="submit">변경 저장</button>
+          </div>
+        </form>
+      </section>
+
+      <p id="messageBox" class="message-box"></p>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

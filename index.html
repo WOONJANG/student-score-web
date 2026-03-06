@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>학생 점수 관리 웹</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body data-page="auth">
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-badge">S</div>
+        <div>
+          <h1>학생 점수 관리 웹</h1>
+          <p>로그인 / 학생 회원가입 / 선생님 회원가입</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="auth-layout">
+      <section class="hero-card">
+        <span class="eyebrow">Google Sheets + Apps Script</span>
+        <h2>선생님과 학생이 함께 쓰는<br />점수 관리 웹</h2>
+        <p>
+          학생은 하루에 한 번 활동을 체크해서 점수를 올릴 수 있고,
+          선생님은 학생 점수를 직접 수정할 수 있습니다.
+          항목별 누적점수도 함께 관리됩니다.
+        </p>
+
+        <div class="feature-list">
+          <div class="feature-item">
+            <strong>학생 하루 1회 제출</strong>
+            <span>체크박스로 활동 선택 후 저장하면 점수 자동 합산</span>
+          </div>
+          <div class="feature-item">
+            <strong>선생님 점수 조정</strong>
+            <span>학생별 점수 직접 저장, 누적 추가, 빠른 추가 가능</span>
+          </div>
+          <div class="feature-item">
+            <strong>항목별 누적 점수</strong>
+            <span>물마시기, 화분 물주기, 잔반 안 남기기 등 누적 현황 확인</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel auth-panel">
+        <div class="tabs three">
+          <button id="tabLogin" class="tab-btn active" type="button">로그인</button>
+          <button id="tabStudentRegister" class="tab-btn" type="button">학생 회원가입</button>
+          <button id="tabTeacherRegister" class="tab-btn" type="button">선생님 회원가입</button>
+        </div>
+
+        <form id="loginForm" class="form-block">
+          <h3>로그인</h3>
+          <div class="field-grid single">
+            <label class="field">
+              <span>아이디</span>
+              <input type="text" id="loginUsername" placeholder="아이디 입력" required />
+            </label>
+            <label class="field">
+              <span>비밀번호</span>
+              <input type="password" id="loginPassword" placeholder="비밀번호 입력" required />
+            </label>
+          </div>
+          <button class="primary-btn full" type="submit">로그인</button>
+        </form>
+
+        <form id="studentRegisterForm" class="form-block hidden">
+          <h3>학생 회원가입</h3>
+          <div class="teacher-lookup-box">
+            <div class="field-grid teacher-lookup-grid">
+              <label class="field">
+                <span>선생님 아이디</span>
+                <input type="text" id="studentTeacherUsername" placeholder="선생님 아이디 입력" required />
+              </label>
+              <div class="lookup-button-wrap">
+                <button id="teacherLookupBtn" class="secondary-btn" type="button">선생님 확인</button>
+              </div>
+            </div>
+
+            <div class="field-grid single">
+              <label class="field">
+                <span>학교명</span>
+                <input type="text" id="studentSchoolName" readonly />
+              </label>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>학년</span>
+              <select id="studentGrade" required>
+                <option value="">선택</option>
+                <option value="1">1학년</option>
+                <option value="2">2학년</option>
+                <option value="3">3학년</option>
+                <option value="4">4학년</option>
+                <option value="5">5학년</option>
+                <option value="6">6학년</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>반</span>
+              <input type="number" id="studentClassNo" min="1" placeholder="예: 3" required />
+            </label>
+            <label class="field">
+              <span>번호</span>
+              <input type="number" id="studentNo" min="1" placeholder="예: 12" required />
+            </label>
+            <label class="field">
+              <span>이름</span>
+              <input type="text" id="studentName" placeholder="이름 입력" required />
+            </label>
+            <label class="field">
+              <span>아이디</span>
+              <input type="text" id="studentUsername" placeholder="학생 로그인 아이디" required />
+            </label>
+            <label class="field">
+              <span>비밀번호</span>
+              <input type="password" id="studentPassword" placeholder="비밀번호 입력" required />
+            </label>
+          </div>
+
+          <button class="primary-btn full" type="submit">학생 회원가입</button>
+        </form>
+
+        <form id="teacherRegisterForm" class="form-block hidden">
+          <h3>선생님 회원가입</h3>
+          <div class="field-grid">
+            <label class="field">
+              <span>어드민 전용 비밀번호</span>
+              <input type="password" id="teacherAdminSecret" placeholder="어드민 비밀번호 입력" required />
+            </label>
+            <label class="field">
+              <span>학교명</span>
+              <input type="text" id="teacherSchoolName" placeholder="예: 행복초등학교" required />
+            </label>
+            <label class="field">
+              <span>아이디</span>
+              <input type="text" id="teacherUsername" placeholder="선생님 로그인 아이디" required />
+            </label>
+            <label class="field">
+              <span>비밀번호</span>
+              <input type="password" id="teacherPassword" placeholder="비밀번호 입력" required />
+            </label>
+          </div>
+
+          <button class="primary-btn full" type="submit">선생님 회원가입</button>
+        </form>
+
+        <p id="messageBox" class="message-box"></p>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

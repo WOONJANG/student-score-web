@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>학생 점수 관리 | 학생 계정 관리</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body data-page="teacher-students">
+  <div class="shell wide">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-badge teacher">T</div>
+        <div>
+          <h1>학생 점수 관리 웹</h1>
+          <p>선생님용 · 학생 계정 관리</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <a class="ghost-btn nav-link active-link" href="./teacher-students.html">학생 계정</a>
+        <a class="ghost-btn nav-link" href="./teacher-scores.html">학생 점수</a>
+        <a class="ghost-btn nav-link" href="./teacher-settings.html">선생님 설정</a>
+        <button id="logoutBtn" class="ghost-btn" type="button">로그아웃</button>
+      </div>
+    </header>
+
+    <main class="page-grid">
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">내 학생 계정</span>
+            <h2>소속 학생 목록</h2>
+            <p class="sub-text">내 아이디로 가입한 학생만 보입니다.</p>
+          </div>
+          <button id="refreshStudentsBtn" class="ghost-btn" type="button">새로고침</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>학년</th>
+                <th>반</th>
+                <th>번호</th>
+                <th>이름</th>
+                <th>아이디</th>
+                <th>학교명</th>
+                <th>수정</th>
+                <th>삭제</th>
+              </tr>
+            </thead>
+            <tbody id="studentsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">계정 수정</span>
+            <h2>학생 정보 수정</h2>
+            <p class="sub-text">수정할 학생을 위 표에서 선택하세요.</p>
+          </div>
+        </div>
+
+        <form id="studentEditForm" class="form-block hidden">
+          <input type="hidden" id="editStudentId" />
+          <div class="field-grid">
+            <label class="field">
+              <span>학년</span>
+              <select id="editGrade" required>
+                <option value="">선택</option>
+                <option value="1">1학년</option>
+                <option value="2">2학년</option>
+                <option value="3">3학년</option>
+                <option value="4">4학년</option>
+                <option value="5">5학년</option>
+                <option value="6">6학년</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>반</span>
+              <input type="number" id="editClassNo" min="1" required />
+            </label>
+            <label class="field">
+              <span>번호</span>
+              <input type="number" id="editStudentNo" min="1" required />
+            </label>
+            <label class="field">
+              <span>이름</span>
+              <input type="text" id="editName" required />
+            </label>
+            <label class="field">
+              <span>아이디</span>
+              <input type="text" id="editUsername" required />
+            </label>
+            <label class="field">
+              <span>비밀번호 재설정</span>
+              <input type="password" id="editPassword" placeholder="비워두면 기존 비밀번호 유지" />
+            </label>
+          </div>
+
+          <div class="edit-actions">
+            <button class="primary-btn" type="submit">수정 저장</button>
+            <button id="cancelEditBtn" class="ghost-btn" type="button">취소</button>
+          </div>
+        </form>
+
+        <div id="editPlaceholder" class="empty-state">
+          수정할 학생을 선택하면 여기서 정보를 바꿀 수 있습니다.
+        </div>
+      </section>
+
+      <p id="messageBox" class="message-box"></p>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
