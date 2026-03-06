@@ -1,3 +1,4 @@
+
 * {
   box-sizing: border-box;
 }
@@ -55,7 +56,7 @@ a {
 }
 
 .shell.wide {
-  width: min(1440px, calc(100% - 32px));
+  width: min(1460px, calc(100% - 32px));
 }
 
 .topbar {
@@ -198,7 +199,8 @@ a {
 .ghost-btn,
 .danger-btn,
 .small-add-btn,
-.small-name-btn {
+.small-name-btn,
+.small-delete-btn {
   border: 0;
   cursor: pointer;
   transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease;
@@ -210,7 +212,8 @@ a {
 .ghost-btn:hover,
 .danger-btn:hover,
 .small-add-btn:hover,
-.small-name-btn:hover {
+.small-name-btn:hover,
+.small-delete-btn:hover {
   transform: translateY(-1px);
 }
 
@@ -334,12 +337,17 @@ a {
   color: var(--teacher);
 }
 
-.danger-btn {
+.danger-btn,
+.small-delete-btn {
   padding: 10px 12px;
   border-radius: 12px;
   background: rgba(211, 47, 47, 0.1);
   color: var(--danger);
   font-weight: 800;
+}
+
+.small-delete-btn {
+  padding: 8px 10px;
 }
 
 .full {
@@ -399,7 +407,7 @@ a {
 }
 
 .info-card .value {
-  font-size: 1.16rem;
+  font-size: 1.12rem;
   font-weight: 900;
 }
 
@@ -439,6 +447,7 @@ a {
   color: var(--text);
   font-weight: 700;
   margin-bottom: 16px;
+  line-height: 1.6;
 }
 
 .status-box.success {
@@ -463,6 +472,11 @@ a {
   background: #fff;
   box-shadow: var(--shadow-md);
   overflow: hidden;
+  opacity: 1;
+}
+
+.activity-card.done {
+  background: #f5f7fb;
 }
 
 .activity-card label {
@@ -494,6 +508,11 @@ a {
   font-weight: 800;
 }
 
+.activity-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .table-wrap {
   width: 100%;
   overflow-x: auto;
@@ -513,7 +532,7 @@ a {
 }
 
 .data-table.wide-table {
-  min-width: 1500px;
+  min-width: 1520px;
 }
 
 .data-table thead th {

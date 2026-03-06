@@ -1,3 +1,4 @@
+
 const CONFIG = {
   apiBaseUrl: "https://script.google.com/macros/s/AKfycbzXJHpD39Z_U4UIdZ2XNmGqZSDWP16EGnB5Vwq08Hvt2_0JIaLqUuu3Dy6K_1ZXMIx93Q/exec"
 };
@@ -7,6 +8,7 @@ const STORAGE_KEY = "studentScoreWebSession";
 let teacherScoreStudents = [];
 let teacherActivityItems = [];
 let teacherSelectedStudent = null;
+let currentTeacherToken = "";
 
 document.addEventListener("DOMContentLoaded", initPage);
 
@@ -62,6 +64,7 @@ function initTeacherStudentsPage() {
 
 function initTeacherScoresPage() {
   requireRoleAndRun("teacher", async (session) => {
+    currentTeacherToken = session.token;
     document.getElementById("refreshScoresBtn").addEventListener("click", () => loadTeacherScores(session.token));
     document.getElementById("saveAbsoluteScoreBtn").addEventListener("click", () => saveAbsoluteScore(session.token));
     document.getElementById("saveDeltaScoreBtn").addEventListener("click", () => saveDeltaScore(session.token));
@@ -246,10 +249,10 @@ async function onStudentDailySubmit(event, token) {
   event.preventDefault();
   clearMessage();
 
-  const selectedKeys = Array.from(document.querySelectorAll('input[name="dailyActivity"]:checked')).map((input) => input.value);
+  const selectedKeys = Array.from(document.querySelectorAll('input[name="dailyActivity"]:checked:not(:disabled)')).map((input) => input.value);
 
   if (!selectedKeys.length) {
-    showMessage("하나 이상 선택해주세요.", "error");
+    showMessage("반영할 항목을 하나 이상 선택해주세요.", "error");
     return;
   }
 
@@ -258,7 +261,7 @@ async function onStudentDailySubmit(event, token) {
       token,
       selectedKeys: selectedKeys.join(",")
     });
-    showMessage(result.message || "오늘 활동 점수가 반영되었습니다.", "success");
+    showMessage(result.message || "활동 점수가 반영되었습니다.", "success");
     await loadStudentDashboard(token);
   } catch (error) {
     showMessage(error.message, "error");
@@ -282,13 +285,16 @@ async function loadTeacherScores(token) {
     teacherScoreStudents = result.students || [];
     teacherActivityItems = result.activityItems || [];
     renderScoreSummary(result.students);
-    renderTeacherScoresTable(result.students, result.activityItems, token);
+    renderTeacherScoresTable(result.students, token);
+
     if (teacherSelectedStudent) {
       const refreshed = teacherScoreStudents.find((student) => student.id === teacherSelectedStudent.id);
       if (refreshed) {
         teacherSelectedStudent = refreshed;
         fillScoreEditForm(refreshed);
       }
+    } else {
+      renderTeacherLogsTable([]);
     }
   } catch (error) {
     showMessage(error.message, "error");
@@ -374,33 +380,36 @@ function renderStudentDashboard(user) {
 function renderStudentDailyActivity(activityItems, todaySubmission) {
   const box = document.getElementById("dailyActivityOptions");
   const statusBox = document.getElementById("dailyStatusBox");
-  const saveBtn = document.getElementById("saveDailyActivityBtn");
+  const submittedKeys = new Set(todaySubmission?.submittedKeys || []);
+  const allSelfItems = activityItems.filter((item) => item.key !== "teacher_adjustment");
+  const remainingCount = allSelfItems.filter((item) => !submittedKeys.has(item.key)).length;
 
-  box.innerHTML = activityItems
-    .filter((item) => item.key !== "teacher_adjustment")
-    .map((item) => `
-      <div class="activity-card">
+  box.innerHTML = allSelfItems.map((item) => {
+    const isDone = submittedKeys.has(item.key);
+    return `
+      <div class="activity-card ${isDone ? "done" : ""}">
         <label>
-          <input type="checkbox" name="dailyActivity" value="${escapeHtml(item.key)}" ${todaySubmission ? "disabled" : ""} />
+          <input type="checkbox" name="dailyActivity" value="${escapeHtml(item.key)}" ${isDone ? "disabled checked" : ""} />
           <div class="activity-meta">
             <div class="activity-title">${escapeHtml(item.label)}</div>
             <div class="activity-points">+${Number(item.points || 0).toLocaleString()}점</div>
+            <div class="activity-note">${isDone ? "오늘 이미 반영됨" : "오늘 아직 반영 가능"}</div>
           </div>
         </label>
       </div>
-    `)
-    .join("");
+    `;
+  }).join("");
 
-  if (todaySubmission) {
+  if (submittedKeys.size) {
     const selectedText = (todaySubmission.selectedItems || []).map((item) => `${item.label}(+${item.points}점)`).join(", ");
     statusBox.className = "status-box success";
-    statusBox.textContent = `오늘은 이미 제출했습니다. ${todaySubmission.dateLabel} / ${selectedText} / 총 +${Number(todaySubmission.totalScore || 0).toLocaleString()}점`;
-    saveBtn.disabled = true;
+    statusBox.textContent = `오늘 이미 반영한 항목: ${selectedText} / 남은 반영 가능 항목: ${remainingCount}개`;
   } else {
     statusBox.className = "status-box warning";
-    statusBox.textContent = "오늘은 아직 제출하지 않았습니다. 활동을 선택하고 저장하세요.";
-    saveBtn.disabled = false;
+    statusBox.textContent = "오늘 아직 반영한 항목이 없습니다. 원하는 활동을 선택해 저장하세요.";
   }
+
+  document.getElementById("saveDailyActivityBtn").disabled = remainingCount === 0;
 }
 
 function renderItemSummaryCards(targetId, activityItems, itemTotals) {
@@ -410,7 +419,7 @@ function renderItemSummaryCards(targetId, activityItems, itemTotals) {
   box.innerHTML = activityItems.map((item) => `
     <div class="info-card">
       <div class="label">${escapeHtml(item.label)}</div>
-      <div class="value">${Number(itemTotals?.[item.key] || 0).toLocaleString()}점</div>
+      <div class="value">${formatItemTotal(itemTotals?.[item.key] || 0)}</div>
     </div>
   `).join("");
 }
@@ -553,7 +562,7 @@ function renderScoreSummary(students) {
   `).join("");
 }
 
-function renderTeacherScoresTable(students, activityItems, token) {
+function renderTeacherScoresTable(students, token) {
   const tbody = document.getElementById("scoresTableBody");
 
   if (!students.length) {
@@ -561,7 +570,7 @@ function renderTeacherScoresTable(students, activityItems, token) {
     return;
   }
 
-  const getItemValue = (student, key) => Number(student.itemTotals?.[key] || 0).toLocaleString();
+  const getItemValue = (student, key) => formatItemTotal(student.itemTotals?.[key] || 0);
 
   tbody.innerHTML = students.map((student, index) => `
     <tr>
@@ -572,11 +581,11 @@ function renderTeacherScoresTable(students, activityItems, token) {
       <td><button class="small-name-btn open-score-editor-btn" type="button" data-student='${escapeAttribute(JSON.stringify(student))}'>${escapeHtml(student.name)}</button></td>
       <td>${escapeHtml(student.username)}</td>
       <td><span class="badge-score">${Number(student.score || 0).toLocaleString()}점</span></td>
-      <td>${getItemValue(student, "drink_water")}점</td>
-      <td>${getItemValue(student, "water_plant")}점</td>
-      <td>${getItemValue(student, "no_leftovers")}점</td>
-      <td>${getItemValue(student, "recycle_sort")}점</td>
-      <td>${formatSignedPlain(student.itemTotals?.teacher_adjustment || 0)}점</td>
+      <td>${getItemValue(student, "drink_water")}</td>
+      <td>${getItemValue(student, "water_plant")}</td>
+      <td>${getItemValue(student, "no_leftovers")}</td>
+      <td>${getItemValue(student, "recycle_sort")}</td>
+      <td>${getItemValue(student, "teacher_adjustment")}</td>
       <td><button class="small-add-btn quick-score-btn" type="button" data-id="${escapeHtml(student.id)}" data-delta="1">+1</button></td>
       <td><button class="small-add-btn quick-score-btn" type="button" data-id="${escapeHtml(student.id)}" data-delta="5">+5</button></td>
       <td><button class="small-add-btn quick-score-btn" type="button" data-id="${escapeHtml(student.id)}" data-delta="10">+10</button></td>
@@ -620,7 +629,49 @@ function fillScoreEditForm(student) {
   document.getElementById("scoreDeltaValue").value = "";
 
   renderItemSummaryCards("teacherSelectedItemSummaryCards", teacherActivityItems, student.itemTotals || {});
-  renderLogsTable("teacherLogsTableBody", student.logs || []);
+  renderTeacherLogsTable(student.logs || []);
+}
+
+function renderTeacherLogsTable(logs) {
+  const tbody = document.getElementById("teacherLogsTableBody");
+  if (!tbody) return;
+
+  if (!logs || !logs.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-row">선택된 학생 로그가 없습니다.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = logs.map((log) => `
+    <tr>
+      <td>${escapeHtml(log.dateLabel || "-")}</td>
+      <td>${escapeHtml(log.typeLabel || "-")}</td>
+      <td>${escapeHtml(log.contentText || "-")}</td>
+      <td>${formatSignedScore(log.deltaScore)}</td>
+      <td><button class="small-delete-btn delete-log-btn" type="button" data-log-id="${escapeHtml(log.id)}">삭제</button></td>
+    </tr>
+  `).join("");
+
+  tbody.querySelectorAll(".delete-log-btn").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const logId = button.dataset.logId;
+      if (!teacherSelectedStudent) return;
+
+      const ok = confirm("이 로그를 삭제하고 점수를 되돌릴까요?");
+      if (!ok) return;
+
+      try {
+        const result = await apiRequest("deleteLogEntry", {
+          token: currentTeacherToken,
+          studentId: teacherSelectedStudent.id,
+          logId
+        });
+        showMessage(result.message || "로그가 삭제되었습니다.", "success");
+        await loadTeacherScores(currentTeacherToken);
+      } catch (error) {
+        showMessage(error.message, "error");
+      }
+    });
+  });
 }
 
 function resetScoreEditForm() {
@@ -632,7 +683,7 @@ function resetScoreEditForm() {
   placeholder.classList.remove("hidden");
   teacherSelectedStudent = null;
   document.getElementById("teacherSelectedItemSummaryCards").innerHTML = "";
-  renderLogsTable("teacherLogsTableBody", []);
+  renderTeacherLogsTable([]);
 }
 
 async function saveAbsoluteScore(token) {
@@ -773,9 +824,9 @@ function formatSignedScore(value) {
   return `${num > 0 ? "+" : ""}${num.toLocaleString()}점`;
 }
 
-function formatSignedPlain(value) {
+function formatItemTotal(value) {
   const num = Number(value || 0);
-  return `${num > 0 ? "+" : ""}${num.toLocaleString()}`;
+  return `${num > 0 ? "+" : ""}${num.toLocaleString()}점`;
 }
 
 function escapeHtml(value) {
