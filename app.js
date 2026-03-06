@@ -1,6 +1,6 @@
 
 const CONFIG = {
-  apiBaseUrl: "https://script.google.com/macros/s/AKfycbzXJHpD39Z_U4UIdZ2XNmGqZSDWP16EGnB5Vwq08Hvt2_0JIaLqUuu3Dy6K_1ZXMIx93Q/exec"
+  apiBaseUrl: "https://script.google.com/macros/s/AKfycbwImS1r9IJP7Mt_SMOUanRIIzROb-2DExHz42h7-XbppifMzDK62c7rIPY2yVUuECdhzQ/exec"
 };
 
 const STORAGE_KEY = "studentScoreWebSession";
@@ -252,7 +252,7 @@ async function onStudentDailySubmit(event, token) {
   const selectedKeys = Array.from(document.querySelectorAll('input[name="dailyActivity"]:checked:not(:disabled)')).map((input) => input.value);
 
   if (!selectedKeys.length) {
-    showMessage("반영할 항목을 하나 이상 선택해주세요.", "error");
+    showMessage("오늘 아직 반영하지 않은 항목만 선택해주세요. 이미 반영한 항목은 다시 올릴 수 없습니다.", "error");
     return;
   }
 
@@ -389,11 +389,11 @@ function renderStudentDailyActivity(activityItems, todaySubmission) {
     return `
       <div class="activity-card ${isDone ? "done" : ""}">
         <label>
-          <input type="checkbox" name="dailyActivity" value="${escapeHtml(item.key)}" ${isDone ? "disabled checked" : ""} />
+          <input type="checkbox" name="dailyActivity" value="${escapeHtml(item.key)}" ${isDone ? "disabled" : ""} />
           <div class="activity-meta">
             <div class="activity-title">${escapeHtml(item.label)}</div>
             <div class="activity-points">+${Number(item.points || 0).toLocaleString()}점</div>
-            <div class="activity-note">${isDone ? "오늘 이미 반영됨" : "오늘 아직 반영 가능"}</div>
+            <div class="activity-note">${isDone ? "오늘 이미 반영해서 다시 선택할 수 없음" : "오늘 아직 반영 가능"}</div>
           </div>
         </label>
       </div>
@@ -403,7 +403,7 @@ function renderStudentDailyActivity(activityItems, todaySubmission) {
   if (submittedKeys.size) {
     const selectedText = (todaySubmission.selectedItems || []).map((item) => `${item.label}(+${item.points}점)`).join(", ");
     statusBox.className = "status-box success";
-    statusBox.textContent = `오늘 이미 반영한 항목: ${selectedText} / 남은 반영 가능 항목: ${remainingCount}개`;
+    statusBox.textContent = `오늘 이미 반영한 항목: ${selectedText} / 남은 반영 가능 항목: ${remainingCount}개 / 이미 반영한 항목은 다시 저장되지 않습니다.`;
   } else {
     statusBox.className = "status-box warning";
     statusBox.textContent = "오늘 아직 반영한 항목이 없습니다. 원하는 활동을 선택해 저장하세요.";
